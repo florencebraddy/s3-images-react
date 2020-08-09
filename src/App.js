@@ -1,24 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+// import "./App.css";
+import axios from "axios";
+
+function convertImage(binaryArray) {
+  let arrayBufferView = new Uint8Array(binaryArray);
+  let blob = new Blob([arrayBufferView], { type: "image/jpeg" });
+  let urlCreator = window.url || window.webkitURL;
+  let imageUrl = urlCreator.createObjectURL(blob);
+  return imageUrl;
+}
 
 function App() {
+  const [photos, setPhotos] = useState([]);
+  useEffect(() => {
+    async function getPhotos() {
+      const res = await axios.get("http://localhost:3000/photos");
+      setPhotos(res.data.map(item => convertImage(item.Body.data)));
+    }
+    getPhotos();
+  }, []);
+  console.log(photos);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {photos.map(photo => {
+        return <img src={photo} alt="fail" />;
+      })}
     </div>
   );
 }
