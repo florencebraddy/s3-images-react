@@ -9,24 +9,33 @@ function convertImage(binaryArray) {
   let imageUrl = urlCreator.createObjectURL(blob);
   return imageUrl;
 }
-
 function App() {
   const [photos, setPhotos] = useState([]);
-  useEffect(() => {
-    async function getPhotos() {
-      const res = await axios.get("http://localhost:3000/photos");
-      setPhotos(res.data.map(item => convertImage(item.Body.data)));
-    }
-    getPhotos();
-  }, []);
-  console.log(photos);
+  const [username, setUsername] = useState("");
+  // useEffect(() => {
+  //   async function getPhotos() {
+  //     const res = await axios.get(`http://localhost:3000/photos?username=${}`);
+  //     setPhotos(res.data.map(item => convertImage(item.Body.data)));
+  //   }
+  //   getPhotos();
+  // }, []);
+  // console.log(photos);
+
+  async function getPhotosUsername(e) {
+    const res = await axios.get(
+      `http://localhost:3000/photos?username=${username}`
+    );
+    setPhotos(res.data.map(item => convertImage(item.Body.data)));
+  }
+
   return (
     <div className="App">
+      <input onChange={e => setUsername(e.target.value)} />
+      <button onClick={e => getPhotosUsername(e)}>Get Photos</button>
       {photos.map(photo => {
-        return <img src={photo} alt="fail" />;
+        return <img style={{ width: "40vw" }} src={photo} alt="fail" />;
       })}
     </div>
   );
 }
-
 export default App;
